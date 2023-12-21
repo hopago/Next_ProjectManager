@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import localFont from 'next/font/local';
+import { cn } from '@/lib/utils';
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const headingFont = localFont({
+  src: "../public/fonts/SCDream4.otf"
+});
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -12,11 +15,11 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={cn("h-full", headingFont.className)}>{children}</body>
     </html>
-  )
+  );
 }
