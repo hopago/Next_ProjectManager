@@ -1,6 +1,10 @@
 "use client";
 
-import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Activity, CreditCard, Layout, Settings } from "lucide-react";
