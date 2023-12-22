@@ -1,18 +1,15 @@
-import create from "@/actions/board/create-board";
+import { Separator } from "@/components/ui/separator";
+import Info from "./_components/info";
+import { BoardList } from "./_components/board-list";
 
-export default function page() {
+export default async function page() {
   return (
-    <div>
-      <form action={create}>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          required
-          placeholder="제목을 입력하세요."
-          className="border-black border p-1 focus:outline-none"
-        />
-      </form>
+    <div className="w-full mb-20">
+      <Info />
+      <Separator className="my-4" />
+      <div className="px-2 md:px-4">
+        <BoardList />
+      </div>
     </div>
   );
 }
