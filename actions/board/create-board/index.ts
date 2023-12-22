@@ -1,42 +1,63 @@
-"use server"
+"use server";
 
 import { auth } from "@clerk/nextjs";
-import { InputType, ReturnType } from "./types"
+import { InputType, ReturnType } from "./types";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { CreateBoard } from "./schema";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
-  const { userId } = auth();
+  const { userId, orgId: organizationId } = auth();
 
-  if (!userId) {
+  if (!userId || !organizationId) {
     return {
-      error: "Unauthorized..."
-    }
+      error: "Unauthorized...",
+    };
   }
 
-  const { title } = data;
+  const { title, image } = data;
+
+  const [imageId, imageThumbUrl, imageFullUrl, imageLinkHTML, imageUserName] =
+    image.split("|");
+
+  if (
+    !imageId ||
+    !imageThumbUrl ||
+    !imageFullUrl ||
+    !imageLinkHTML ||
+    !imageUserName
+  ) {
+    return {
+      error: "Missing Fields...",
+    };
+  }
 
   let board;
 
   try {
     board = await db.board.create({
       data: {
-        title
-      }
+        title,
+        organizationId,
+        imageId,
+        imageThumbUrl,
+        imageFullUrl,
+        imageUserName,
+        imageLinkHTML,
+      },
     });
   } catch (err) {
     return {
-      error: "Internal Error..."
-    }
+      error: "Internal Error...",
+    };
   }
 
   revalidatePath(`/board/${board.id}`);
 
   return {
-    data: board
-  }
+    data: board,
+  };
 };
 
 export const createBoard = createSafeAction(CreateBoard, handler);
