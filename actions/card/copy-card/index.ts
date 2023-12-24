@@ -5,9 +5,7 @@ import { InputType, ReturnType } from "./types";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { createSafeAction } from "@/lib/create-safe-action";
-import { CreateCard } from "./schema";
-import { createAuditLog } from "@/lib/create-audit-log";
-import { ACTION, ENTITY_TYPE } from "@prisma/client";
+import { CopyCard } from "./schema";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -18,28 +16,30 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     };
   }
 
-  const { title, boardId, listId } = data;
+  const { id, boardId } = data;
   let card;
 
   try {
-    const list = await db.list.findUnique({
+    const cardToCopy = await db.card.findUnique({
       where: {
-        id: listId,
-        board: {
-          organizationId: orgId,
+        id,
+        list: {
+          board: {
+            organizationId: orgId,
+          },
         },
       },
     });
 
-    if (!list) {
+    if (!cardToCopy) {
       return {
-        error: "List nof found...",
+        error: "Card not found...",
       };
     }
 
     const lastCard = await db.card.findFirst({
       where: {
-        listId,
+        listId: cardToCopy.listId,
       },
       orderBy: {
         order: "desc",
@@ -53,21 +53,15 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
     card = await db.card.create({
       data: {
-        title,
-        listId,
+        title: `${cardToCopy.title} - Copy`,
+        description: cardToCopy.description,
         order: newOrder,
+        listId: cardToCopy.listId,
       },
-    });
-
-    await createAuditLog({
-      entityId: card.id,
-      entityTitle: card.title,
-      entityType: ENTITY_TYPE.CARD,
-      action: ACTION.CREATE
     });
   } catch (err) {
     return {
-      error: "Failed to create...",
+      error: "Failed to copy...",
     };
   }
 
@@ -75,4 +69,4 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   return { data: card };
 };
 
-export const createCard = createSafeAction(CreateCard, handler);
+export const copyCard = createSafeAction(CopyCard, handler);

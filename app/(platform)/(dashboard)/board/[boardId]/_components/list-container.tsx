@@ -26,20 +26,20 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
 export default function ListContainer({ data, boardId }: ListsProps) {
   const { execute: executeUpdateListOrder } = useAction(updateListOrder, {
     onSuccess: () => {
-      toast.success("리스트가 변경되었습니다")
+      toast.success("리스트가 변경되었습니다");
     },
     onError: (error) => {
       toast.error(error);
-    }
+    },
   });
 
   const { execute: executeUpdateCardOrder } = useAction(updateCardOrder, {
     onSuccess: () => {
-      toast.success("카드가 변경되었습니다")
+      toast.success("카드가 변경되었습니다");
     },
     onError: (error) => {
       toast.error(error);
-    }
+    },
   });
 
   const [orderedList, setOrderedList] = useState(data);
@@ -108,7 +108,7 @@ export default function ListContainer({ data, boardId }: ListsProps) {
         setOrderedList(newOrderedList);
         executeUpdateCardOrder({
           boardId,
-          items: reorderedCards
+          items: reorderedCards,
         });
       } else {
         const [moveCard] = sourceList.cards.splice(source.index, 1);
@@ -118,18 +118,18 @@ export default function ListContainer({ data, boardId }: ListsProps) {
         destinationList.cards.splice(destination.index, 0, moveCard);
 
         sourceList.cards.forEach((card, index) => {
-          card.order = index
+          card.order = index;
         });
 
         destinationList.cards.forEach((card, index) => {
-          card.order = index
+          card.order = index;
         });
 
         setOrderedList(newOrderedList);
         executeUpdateCardOrder({
           boardId,
-          items: destinationList.cards
-        })
+          items: destinationList.cards,
+        });
       }
     }
   };
