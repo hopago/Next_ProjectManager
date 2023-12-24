@@ -23,6 +23,10 @@ export const Header = ({ card }: CardProps) => {
         queryKey: ["card", data.id]
       });
 
+      queryClient.invalidateQueries({
+        queryKey: ["card-logs", data.id]
+      });
+
       toast.success(`카드명이 ${data.title}로 변경 됐습니다`);
       setTitle(data.title);
     },
